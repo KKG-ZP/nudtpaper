@@ -14,6 +14,11 @@ Use `nudtpaper.cls` directly and modify **your** `thesis.tex`. The contents in `
 
 If `nudtpaper` helps you, please give it a **star**!
 
+## Branch Notes
+
++ `master` 分支保持主模板结构与默认使用方式。
++ `with-fonts` 分支额外包含 `fonts/` 目录及对应字体加载配置，适合需要在 Overleaf 或新环境中直接使用仓库内字体文件编译的场景。
+
 
 ## 3. 开题报告简要指南
 
