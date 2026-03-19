@@ -97,7 +97,15 @@
 \RequirePackage{xunicode-addon}
 \RequirePackage{notoccite}
 \newcommand{\fttilde}{\fontspec{FreeSerif}\selectfont}
-\newfontfamily{\timesWinfont}{Times New Roman}
+\newcommand{\nudtfontdir}{fonts/}
+\newfontfamily{\timesWinfont}{TimesNewRomanPSStd}[
+  Path=\nudtfontdir,
+  Extension=.otf,
+  UprightFont=*-Regular,
+  BoldFont=*-Bold,
+  ItalicFont=*-Italic,
+  BoldItalicFont=*-BoldIt
+]
 \newcounter{numitemval}
 \newcounter{numitemslt} %selected
 \ifisbiber
@@ -180,60 +188,148 @@ pdfborder=0 1 1]{hyperref}
 \xeCJKsetcharclass{"0}{"2E7F}{0}
 \xeCJKsetcharclass{"2E80}{"FFFF}{1}
 \RequirePackage{pdfpages}
+\newcommand{\installlatinfonts}{
+    \setmainfont{TimesNewRomanPSStd}[
+        Path=\nudtfontdir,
+        Extension=.otf,
+        UprightFont=*-Regular,
+        BoldFont=*-Bold,
+        ItalicFont=*-Italic,
+        BoldItalicFont=*-BoldIt
+    ]
+    \setsansfont{arial}[
+        Path=\nudtfontdir,
+        Extension=.ttf,
+        UprightFont=*,
+        BoldFont=arialbd,
+        ItalicFont=ariali,
+        BoldItalicFont=arialbi
+    ]
+    \setmonofont{cour}[
+        Path=\nudtfontdir,
+        Extension=.ttf,
+        UprightFont=*,
+        BoldFont=courbd,
+        ItalicFont=couri,
+        BoldItalicFont=courbi
+    ]
+}
 
 \newcommand{\installttf}{
     %%%% Windows Thesis Fonts
-    \setmainfont{Times New Roman PS Std}
-    \setsansfont{Arial}
-    \setmonofont{Courier New}
+    \installlatinfonts
     %%%% Using Office Family Fonts
-    \setCJKmainfont[BoldFont={STZhongsong}]{SimSun}
-    \setCJKsansfont{SimHei} % Hei
-    \setCJKmonofont{FangSong} % Fangsong
+    \setCJKmainfont[
+        Path=\nudtfontdir,
+        UprightFont=simsun.ttc,
+        BoldFont=stzhongs.ttf
+    ]{simsun.ttc}
+    \setCJKsansfont[
+        Path=\nudtfontdir,
+        UprightFont=simhei.ttf
+    ]{simhei.ttf} % Hei
+    \setCJKmonofont[
+        Path=\nudtfontdir,
+        UprightFont=simfang.ttf
+    ]{simfang.ttf} % Fangsong
     %%%% alias
-    \setCJKfamilyfont{song}{SimSun}
-    \setCJKfamilyfont{hei}{SimHei}
-    \setCJKfamilyfont{fs}{FangSong} % fang-song
-    \setCJKfamilyfont{kai}{KaiTi} % Kai
+    \setCJKfamilyfont{song}[
+        Path=\nudtfontdir,
+        UprightFont=simsun.ttc,
+        BoldFont=stzhongs.ttf
+    ]{simsun.ttc}
+    \setCJKfamilyfont{hei}[
+        Path=\nudtfontdir,
+        UprightFont=simhei.ttf
+    ]{simhei.ttf}
+    \setCJKfamilyfont{fs}[
+        Path=\nudtfontdir,
+        UprightFont=simfang.ttf
+    ]{simfang.ttf} % fang-song
+    \setCJKfamilyfont{kai}[
+        Path=\nudtfontdir,
+        UprightFont=simkai.ttf
+    ]{simkai.ttf} % Kai
 }
 
 \newcommand{\installotf}{
     %%%% Windows Thesis Fonts
-    \setmainfont{Times New Roman PS Std}
-    \setsansfont{Arial}
-    \setmonofont{Courier New}
+    \installlatinfonts
     %%%% Using Adobe Family Fonts
-    \setCJKmainfont[ItalicFont={Adobe Kaiti Std}]{Adobe Song Std}
-    \setCJKsansfont{Adobe Heiti Std} % Hei
-    \setCJKmonofont{Adobe Fangsong Std} % Fangsong
+    \setCJKmainfont[
+        Path=\nudtfontdir,
+        UprightFont=AdobeSongStd-Light.otf,
+        ItalicFont=AdobeKaitiStd-Regular.otf
+    ]{AdobeSongStd-Light.otf}
+    \setCJKsansfont[
+        Path=\nudtfontdir,
+        UprightFont=AdobeHeitiStd-Regular.otf
+    ]{AdobeHeitiStd-Regular.otf} % Hei
+    \setCJKmonofont[
+        Path=\nudtfontdir,
+        UprightFont=AdobeFangsongStd-Regular.otf
+    ]{AdobeFangsongStd-Regular.otf} % Fangsong
     %%%% alias
-    \setCJKfamilyfont{song}{Adobe Song Std}
-    \setCJKfamilyfont{hei}{Adobe Heiti Std}
-    \setCJKfamilyfont{fs}{Adobe Fangsong Std} % fang-song
-    \setCJKfamilyfont{kai}{Adobe Kaiti Std} % Kai
+    \setCJKfamilyfont{song}[
+        Path=\nudtfontdir,
+        UprightFont=AdobeSongStd-Light.otf
+    ]{AdobeSongStd-Light.otf}
+    \setCJKfamilyfont{hei}[
+        Path=\nudtfontdir,
+        UprightFont=AdobeHeitiStd-Regular.otf
+    ]{AdobeHeitiStd-Regular.otf}
+    \setCJKfamilyfont{fs}[
+        Path=\nudtfontdir,
+        UprightFont=AdobeFangsongStd-Regular.otf
+    ]{AdobeFangsongStd-Regular.otf} % fang-song
+    \setCJKfamilyfont{kai}[
+        Path=\nudtfontdir,
+        UprightFont=AdobeKaitiStd-Regular.otf
+    ]{AdobeKaitiStd-Regular.otf} % Kai
 }
 
 \newcommand{\installfz}{
     %%%% Windows Thesis Fonts
-    \setmainfont{Times New Roman PS Std}
-    \setsansfont{Arial}
-    \setmonofont{Courier New}
+    \installlatinfonts
     %%%% Using Founder Family Fonts
-    \setCJKmainfont[BoldFont={FZYaSong-DB-GBK},ItalicFont={FZKai-Z03},BoldItalicFont={FZYaSong-DB-GBK}]{FZShuSong_GB18030-Z01}
-    \setCJKsansfont{FZHei-B01} % Hei
-    \setCJKmonofont{FZFangSong-Z02} % fs
+    \setCJKmainfont[
+        Path=\nudtfontdir,
+        UprightFont=FZSS_GB18030.TTF,
+        BoldFont=FZZYS_GBK.ttf,
+        ItalicFont=FZK_GBK.ttf,
+        BoldItalicFont=FZZYS_GBK.ttf
+    ]{FZSS_GB18030.TTF}
+    \setCJKsansfont[
+        Path=\nudtfontdir,
+        UprightFont=FZH_GBK.ttf
+    ]{FZH_GBK.ttf} % Hei
+    \setCJKmonofont[
+        Path=\nudtfontdir,
+        UprightFont=FZFS_GBK.ttf
+    ]{FZFS_GBK.ttf} % fs
     %%%% alias
-    \setCJKfamilyfont{song}{FZShuSong_GB18030-Z01}
-    \setCJKfamilyfont{hei}{FZHei-B01}
-    \setCJKfamilyfont{fs}{FZFangSong-Z02} % fang-song
-    \setCJKfamilyfont{kai}{FZKai-Z03} % Kai
+    \setCJKfamilyfont{song}[
+        Path=\nudtfontdir,
+        UprightFont=FZSS_GB18030.TTF,
+        BoldFont=FZZYS_GBK.ttf
+    ]{FZSS_GB18030.TTF}
+    \setCJKfamilyfont{hei}[
+        Path=\nudtfontdir,
+        UprightFont=FZH_GBK.ttf
+    ]{FZH_GBK.ttf}
+    \setCJKfamilyfont{fs}[
+        Path=\nudtfontdir,
+        UprightFont=FZFS_GBK.ttf
+    ]{FZFS_GBK.ttf} % fang-song
+    \setCJKfamilyfont{kai}[
+        Path=\nudtfontdir,
+        UprightFont=FZK_GBK.ttf
+    ]{FZK_GBK.ttf} % Kai
 }
 
 \newcommand{\installfandol}{
     %%%% Windows Thesis Fonts
-    \setmainfont{Times New Roman PS Std}
-    \setsansfont{Arial}
-    \setmonofont{Courier New}
+    \installlatinfonts
     %%%% Using Fandol Family Fonts
     \setCJKmainfont{FandolSong}
     \setCJKsansfont{FandolHei} % Hei
