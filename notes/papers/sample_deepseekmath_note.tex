@@ -1,8 +1,3 @@
-\documentclass[UTF8,fontset=fandol,zihao=-4]{ctexart}
-
-\input{../templates/preamble.tex}
-\addbibresource{../bib/references.bib}
-
 \newcommand{\papertitle}{DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models}
 \newcommand{\paperauthors}{DeepSeek-AI}
 \newcommand{\papervenue}{arXiv}
@@ -12,6 +7,16 @@
 \newcommand{\readingdate}{2026-03-22}
 \newcommand{\paperonesentence}{通过大规模数学语料继续预训练、专门化数据筛选和 GRPO 强化学习，DeepSeekMath 显著提升了开源 7B 模型的数学推理能力。}
 \newcommand{\paperkeywords}{math reasoning; continued pretraining; GRPO; open LLM; DeepSeek}
+
+\ifdefined\paperindexmode
+  \paperindexentry{\papertitle}{\paperauthors}{\readingdate}{\paperonesentence}{\paperkeywords}
+\expandafter\endinput
+\fi
+
+\documentclass[UTF8,fontset=fandol,zihao=-4]{ctexart}
+
+\input{../templates/preamble.tex}
+\addbibresource{../bib/references.bib}
 
 \hypersetup{
   pdftitle={\papertitle},
@@ -28,16 +33,7 @@
 
 \section{基本信息}
 
-\begin{tabularx}{\textwidth}{@{}lY@{}}
-\NoteField{标题}{\papertitle}
-\NoteField{作者}{\paperauthors}
-\NoteField{Venue}{\papervenue}
-\NoteField{年份}{\paperyear}
-\NoteField{DOI}{\paperdoi}
-\NoteField{URL}{\url{\paperurl}}
-\NoteField{阅读日期}{\readingdate}
-\NoteField{关键词}{\paperkeywords}
-\end{tabularx}
+\RenderBasicInfoTable
 
 \section{快速浏览}
 

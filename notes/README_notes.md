@@ -29,7 +29,7 @@ notes/
 
 1. 进入 `notes/` 目录。
 2. 复制 [`templates/paper_note_template.tex`](./nudtpaper/notes/templates/paper_note_template.tex) 到 `papers/`，文件名建议使用 `年份-作者缩写-主题.tex` 或 `paperkey_note.tex`。
-3. 打开新文件后，优先修改文首的元信息字段：
+3. 打开新文件后，优先修改文首这组显式字段定义：
    - `\papertitle`
    - `\paperauthors`
    - `\papervenue`
@@ -41,6 +41,12 @@ notes/
    - `\paperkeywords`
 4. 将正文中示例性的 `\cite{...}` 替换为你自己的 Bib key。
 
+模板会用这组元信息同时驱动：
+
+- 标题页中的 `\title` / `\author` / `\date`
+- `基本信息` 表格（通过 `\RenderBasicInfoTable` 自动渲染）
+- 阅读总索引中的半自动条目提取
+
 如果希望保留统一目录结构，单篇笔记建议只放在 `papers/`，图片统一放在 `figures/`。
 
 ## 如何维护阅读总索引
@@ -50,16 +56,15 @@ notes/
 维护原则：
 
 - 索引只保留“快速回看最需要的信息”，不重复正文细节。
-- 每新增一篇笔记，都在 `reading_index.tex` 中手工追加一条 `\paperentry{...}{...}{...}{...}{...}{...}`。
-- 第 1 个参数建议填写标题；如果想在标题后附引文，直接写成 `标题~\cite{bibkey}`。
-- 第 6 个参数填写对应笔记文件路径，推荐使用相对于 `indexes/` 的路径，例如 `../papers/sample_note.tex`。
+- 每新增一篇笔记，都在 `reading_index.tex` 中手工追加一条 `\paperentry{name}`。
+- `name` 表示 `papers/` 目录下对应笔记文件去掉 `.tex` 之后的名字，例如 `sample_note`。
 - `run:` 链接在部分 PDF 查看器中可能被禁用，因此路径文本本身也应保持清晰可读。
 
 推荐流程：
 
 1. 在 `papers/` 中新建笔记文件。
-2. 补全笔记头部元信息，尤其是 `\paperonesentence`。
-3. 在 `indexes/reading_index.tex` 里复制一条 `\paperentry` 并改成对应信息。
+2. 补全笔记头部的显式字段定义，尤其是一句话摘要和关键词。
+3. 在 `indexes/reading_index.tex` 里追加一条 `\paperentry{文件名}`。
 4. 运行 `make index` 编译索引。
 
 ## 如何维护 `references.bib`

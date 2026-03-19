@@ -61,3 +61,15 @@
 
 \newcolumntype{Y}{>{\raggedright\arraybackslash}X}
 \newcommand{\NoteField}[2]{\textbf{#1} & #2 \\}
+\newcommand{\RenderBasicInfoTable}{%
+  \begin{tabularx}{\textwidth}{@{}lY@{}}
+  \NoteField{标题}{\papertitle}
+  \NoteField{作者}{\paperauthors}
+  \NoteField{Venue}{\papervenue}
+  \NoteField{年份}{\paperyear}
+  \NoteField{DOI}{\paperdoi}
+  \NoteField{URL}{\url{\paperurl}}
+  \NoteField{阅读日期}{\readingdate}
+  \NoteField{关键词}{\paperkeywords}
+  \end{tabularx}
+}
