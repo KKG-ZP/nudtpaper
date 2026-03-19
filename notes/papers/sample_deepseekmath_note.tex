@@ -1,0 +1,180 @@
+\documentclass[UTF8,fontset=fandol,zihao=-4]{ctexart}
+
+\input{../templates/preamble.tex}
+\addbibresource{../bib/references.bib}
+
+\newcommand{\papertitle}{DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models}
+\newcommand{\paperauthors}{DeepSeek-AI}
+\newcommand{\papervenue}{arXiv}
+\newcommand{\paperyear}{2024}
+\newcommand{\paperdoi}{10.48550/arXiv.2402.03300}
+\newcommand{\paperurl}{https://arxiv.org/abs/2402.03300}
+\newcommand{\readingdate}{2026-03-22}
+\newcommand{\paperonesentence}{通过大规模数学语料继续预训练、专门化数据筛选和 GRPO 强化学习，DeepSeekMath 显著提升了开源 7B 模型的数学推理能力。}
+\newcommand{\paperkeywords}{math reasoning; continued pretraining; GRPO; open LLM; DeepSeek}
+
+\hypersetup{
+  pdftitle={\papertitle},
+  pdfauthor={\paperauthors}
+}
+
+\title{\papertitle\\\large 论文阅读笔记}
+\author{\paperauthors}
+\date{阅读日期：\readingdate}
+
+\begin{document}
+
+\maketitle
+
+\section{基本信息}
+
+\begin{tabularx}{\textwidth}{@{}lY@{}}
+\NoteField{标题}{\papertitle}
+\NoteField{作者}{\paperauthors}
+\NoteField{Venue}{\papervenue}
+\NoteField{年份}{\paperyear}
+\NoteField{DOI}{\paperdoi}
+\NoteField{URL}{\url{\paperurl}}
+\NoteField{阅读日期}{\readingdate}
+\NoteField{关键词}{\paperkeywords}
+\end{tabularx}
+
+\section{快速浏览}
+
+\subsection{一句话摘要}
+\paperonesentence 论文主体见 \cite{deepseekai2024math}。
+
+\subsection{研究问题}
+本文关注一个非常具体但重要的问题：开源中小规模模型怎样在数学推理任务上逼近更大或闭源模型。作者并没有直接走“更大模型”路线，而是围绕数学语料构建、继续预训练和面向数学任务的 RL 设计了一条更节制的技术路径。
+
+\subsection{核心贡献}
+\begin{itemize}
+  \item 构建高质量数学继续预训练语料，并基于 Common Crawl 设计数据筛选流程。
+  \item 提出并使用 GRPO，减少传统 PPO 在大模型 RL 中对 value model 的额外开销。
+  \item 在 7B 开源模型规模下，把数学推理性能推进到非常有竞争力的水平。
+\end{itemize}
+
+\subsection{适用任务}
+\begin{itemize}
+  \item 数学题求解
+  \item 可验证答案的符号推理任务
+  \item 资源受限条件下的专用能力增强
+\end{itemize}
+
+\section{Method}
+
+\subsection{总体框架}
+整体路线是“通用代码/文本底座 $\rightarrow$ 数学语料继续预训练 $\rightarrow$ 数学指令微调 $\rightarrow$ RL 强化数学推理”。相比单纯 instruction tuning，作者更强调：如果训练前的数学语料分布不够好，后续 RL 和 SFT 的收益会被显著限制。
+
+\subsection{输入输出}
+输入主要是自然语言数学题与解题指令，输出是带有推理过程的数学解答与最终答案。任务设计强调答案可校验，这为后续强化学习提供了天然的规则奖励基础。
+
+\subsection{关键模块}
+\begin{itemize}
+  \item \textbf{Math Corpus Mining}: 从网页数据中筛出高密度数学内容，提升继续预训练数据质量。
+  \item \textbf{Continued Pretraining}: 在数学相关 token 上继续训练，让模型获得更强的数学分布适应性。
+  \item \textbf{GRPO}: 在不显式维护巨大 critic 模型的前提下提升 RL 训练效率。
+\end{itemize}
+
+\subsection{训练目标 / 损失函数}
+如果把监督阶段和强化学习阶段合在一起理解，可以把整体目标粗略记作
+\begin{equation}
+\mathcal{L}
+= \mathcal{L}_{\mathrm{SFT}}
+ + \lambda \mathcal{L}_{\mathrm{GRPO}},
+\end{equation}
+其中 $\mathcal{L}_{\mathrm{SFT}}$ 用于稳定解题格式和基础能力，$\mathcal{L}_{\mathrm{GRPO}}$ 进一步把模型推向更强的数学推理表现。
+
+\subsection{关键公式}
+对这篇论文，最值得记住的不是某个复杂数学推导，而是“数据筛选 + continued pretraining + RL”这条三段式路径，因为它后来也影响了 DeepSeek-R1 等工作 \cite{deepseekai2025r1}。
+
+\subsection{与已有方法的差异}
+与单纯 instruction-tuned math model 相比，DeepSeekMath 更重视训练前的数据分布；与只靠采样和投票放大性能的方法相比，它更强调直接提升模型本体的数学能力；与通用 LLM 路线相比，它说明“专用能力做深”仍然非常有效。
+
+\section{Experiment}
+
+\subsection{数据集}
+评测以 MATH、GSM8K、数学竞赛题和程序辅助推理相关任务为主。这里需要重点确认的是，训练语料和评测集合之间是否存在风格泄漏或分布过近的问题。
+
+\subsection{Baseline}
+基线包括：
+\begin{itemize}
+  \item 通用 7B 开源模型
+  \item 其他数学专用开源模型
+  \item 更大规模或闭源的强数学模型
+\end{itemize}
+
+\subsection{指标}
+主要指标是数学 benchmark 准确率，以及 self-consistency 下的提升幅度。数学任务特别依赖答案判定是否严格规范，因此 evaluation setup 需要仔细读。
+
+\subsection{主要结果}
+\begin{table}[H]
+\centering
+\caption{示例性结果摘录}
+\begin{tabular}{lcc}
+\toprule
+模型 & MATH (\%) & GSM8K (\%) \\
+\midrule
+通用 7B 基础模型 & 17.0 & 56.3 \\
+仅继续预训练版本 & 35.8 & 74.1 \\
+DeepSeekMath 7B & \textbf{51.7} & \textbf{82.9} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+从结果看，真正拉开差距的是前置数据工程与后续 RL 的组合，而不是某个单独 trick。对资源有限的研究者来说，这条路线比一味增大模型规模更现实。
+
+\subsection{消融 / 可解释性（如有）}
+最值得关注的消融包括：数学语料筛选前后的差异、continued pretraining 是否单独就已带来大头收益，以及 GRPO 相比仅 SFT 的边际提升。
+
+\section{Reflection}
+
+\subsection{优点}
+\begin{itemize}
+  \item 技术路线完整，既谈数据，又谈训练，又谈 RL。
+  \item 对中等规模开源模型非常有参考价值，不是只适合超大模型团队。
+  \item 论文对后续 DeepSeek 系列 reasoning work 有明显承上启下的作用。
+\end{itemize}
+
+\subsection{局限}
+\begin{itemize}
+  \item 论文聚焦数学能力，结论未必能直接迁移到所有开放式推理任务。
+  \item 数学网页数据筛选流程虽然关键，但其工程细节较难被外部完整复现。
+  \item benchmark 提升中有多少来自真正推理增强，有多少来自领域分布适应，仍值得细拆。
+\end{itemize}
+
+\subsection{对我当前研究的启发}
+这篇工作提醒我：如果目标任务足够明确，先围绕目标域做深数据和训练流程，常常比追求通用大而全更有效。对于专题能力增强问题，continued pretraining 往往比表面上更重要。
+
+\subsection{可迁移到大模型研究的点}
+\begin{itemize}
+  \item 先把领域数据做扎实，再谈 RL 和后续对齐。
+  \item 面向可验证任务时，RL 会更容易获得稳定收益。
+  \item 专用能力模型可以成为后续更强 reasoning model 的重要中间底座。
+\end{itemize}
+
+\subsection{还没看懂的问题}
+\begin{itemize}
+  \item 数学网页数据筛选的召回率和精度是如何平衡的。
+  \item GRPO 在 7B 规模下的优势，到更大规模时是否同样成立。
+  \item continued pretraining 与 instruction tuning 的最优比例如何确定。
+\end{itemize}
+
+\section{Reuse for Proposal}
+
+\subsection{可用于开题报告 / 综述的表述草稿}
+在开放大模型研究中，专用能力的显著提升并不一定依赖更大的参数规模。DeepSeekMath 表明，通过高质量领域数据挖掘、针对性的继续预训练和面向可验证任务的强化学习，可以在中等规模模型上获得远超通用底座的数学推理能力。
+
+\subsection{可引用的背景动机}
+数学推理任务对语言模型提出了比一般问答更严格的结构化推理要求，因此它是检验模型是否真正形成多步 reasoning 能力的理想试验场。
+
+\subsection{可引用的方法描述}
+一种有效路径是先构建高密度领域语料提升模型对目标分布的适应性，再通过监督微调稳定输出格式，最后利用面向可验证任务的强化学习进一步放大正确推理轨迹的概率。
+
+\section{References}
+
+本文主体基于 \cite{deepseekai2024math}；若想理解其在 DeepSeek 系列中的位置，可以对照 \cite{deepseekai2024llm} 和 \cite{deepseekai2025r1}。
+
+\printbibliography[heading=none]
+
+\end{document}

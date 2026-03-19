@@ -1,0 +1,191 @@
+\documentclass[UTF8,fontset=fandol,zihao=-4]{ctexart}
+
+\input{../templates/preamble.tex}
+\addbibresource{../bib/references.bib}
+
+\newcommand{\papertitle}{DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning}
+\newcommand{\paperauthors}{DeepSeek-AI}
+\newcommand{\papervenue}{arXiv}
+\newcommand{\paperyear}{2025}
+\newcommand{\paperdoi}{10.48550/arXiv.2501.12948}
+\newcommand{\paperurl}{https://arxiv.org/abs/2501.12948}
+\newcommand{\readingdate}{2026-03-19}
+\newcommand{\paperonesentence}{通过大规模强化学习激发推理行为，并结合冷启动数据与多阶段训练，使开放模型在数学、代码和通用推理任务上逼近顶级闭源系统。}
+\newcommand{\paperkeywords}{reasoning LLM; reinforcement learning; GRPO; distillation; DeepSeek}
+
+\hypersetup{
+  pdftitle={\papertitle},
+  pdfauthor={\paperauthors}
+}
+
+\title{\papertitle\\\large 论文阅读笔记}
+\author{\paperauthors}
+\date{阅读日期：\readingdate}
+
+\begin{document}
+
+\maketitle
+
+\section{基本信息}
+
+\begin{tabularx}{\textwidth}{@{}lY@{}}
+\NoteField{标题}{\papertitle}
+\NoteField{作者}{\paperauthors}
+\NoteField{Venue}{\papervenue}
+\NoteField{年份}{\paperyear}
+\NoteField{DOI}{\paperdoi}
+\NoteField{URL}{\url{\paperurl}}
+\NoteField{阅读日期}{\readingdate}
+\NoteField{关键词}{\paperkeywords}
+\end{tabularx}
+
+\section{快速浏览}
+
+\subsection{一句话摘要}
+\paperonesentence 论文主体见 \cite{deepseekai2025r1}。
+
+\subsection{研究问题}
+作者试图回答两个问题：第一，能否仅依赖强化学习而非大规模人工标注推理轨迹，激发模型的长链推理能力；第二，如何在保持可读性和稳定性的同时，把这种推理能力迁移到实用模型和小模型蒸馏版本中。这一问题直指 reasoning model 的训练范式。
+
+\subsection{核心贡献}
+\begin{itemize}
+  \item 提出 DeepSeek-R1-Zero，展示纯 RL 也能诱发 self-reflection、verification 等推理行为。
+  \item 在 R1 中加入冷启动数据与多阶段训练，缓解 R1-Zero 的语言混杂和可读性问题。
+  \item 证明大模型的推理模式可以蒸馏到多个小模型族，形成具有现实部署价值的开放模型谱系。
+\end{itemize}
+
+\subsection{适用任务}
+\begin{itemize}
+  \item 数学推理
+  \item 代码生成与竞赛编程
+  \item 可验证答案的复杂推理任务
+\end{itemize}
+
+\section{Method}
+
+\subsection{总体框架}
+方法主线可以概括为“base model $\rightarrow$ 冷启动监督数据 $\rightarrow$ 强化学习提升推理 $\rightarrow$ 再对齐与蒸馏”。论文最值得关注的不是某一个单独模块，而是它把 RL 放到 reasoning LLM 训练主链中的方式，以及如何控制纯 RL 带来的可读性退化。
+
+\subsection{输入输出}
+输入是标准自然语言问题，包括数学题、代码题和 STEM 推理题；输出是包含中间推理过程和最终答案的文本序列。与传统 instruction tuning 相比，这里更强调“答案可验证”场景，以便为 RL 提供规则化奖励。
+
+\subsection{关键模块}
+\begin{itemize}
+  \item \textbf{R1-Zero}: 直接在基础模型上做大规模 RL，观察推理行为是否自然涌现。
+  \item \textbf{Cold-Start SFT}: 用少量高质量推理数据提高输出可读性，作为后续 RL 的稳定起点。
+  \item \textbf{Distillation}: 用大模型产生的 reasoning traces 监督小模型，验证推理能力迁移。
+\end{itemize}
+
+\subsection{训练目标 / 损失函数}
+论文围绕基于组相对优势的强化学习优化目标展开，核心思想可写成
+\begin{equation}
+\mathcal{L}_{\mathrm{GRPO}}(\theta)
+= - \mathbb{E}_{q, \{o_i\}_{i=1}^{G}}
+\left[
+\frac{1}{G}\sum_{i=1}^{G}
+\hat{A}_i
+\log \pi_{\theta}(o_i \mid q)
+\right],
+\end{equation}
+其中 $q$ 表示问题，$o_i$ 表示同一问题下采样得到的候选输出，$\hat{A}_i$ 是组内相对优势。和 PPO 相比，这种写法更强调组内比较而非显式 value model。
+
+\subsection{关键公式}
+需要重点记住的是“组内相对优势”这一设计，因为它直接关系到 RL 是否能在 reasoning 任务上稳定放大优质轨迹。同时还要看 reward 设计究竟多依赖 rule-based verification，多依赖 learned preference model。
+
+\subsection{与已有方法的差异}
+与传统 SFT + RLHF 路线相比，R1 更激进地把 RL 推到中心位置；与只靠 CoT 监督蒸馏的工作相比，它强调让模型在训练中自己发展推理模式；与闭源 reasoning system 相比，它的价值在于公开了从基础模型到可部署蒸馏模型的一整条技术路线。
+
+\section{Experiment}
+
+\subsection{数据集}
+评测重点覆盖 AIME、MATH-500、Codeforces、LiveCodeBench 等可验证或高难推理任务。这里需要额外留意的一点是，不同 benchmark 的 prompt protocol 是否统一，否则不同模型间比较会被提示词工程影响。
+
+\subsection{Baseline}
+比较对象包括：
+\begin{itemize}
+  \item 传统 SFT / RLHF 模型
+  \item 闭源强推理模型
+  \item 开源基础模型和指令模型
+  \item 由 R1 蒸馏得到的不同规模 dense 模型
+\end{itemize}
+
+\subsection{指标}
+主要记录 pass@1、准确率、benchmark score 和代码竞赛 Elo 等指标。由于任务类型跨数学、代码与知识问答，指标并不统一，因此读者需要特别关注每个任务的评价口径。
+
+\subsection{主要结果}
+\begin{table}[H]
+\centering
+\caption{示例性结果摘录}
+\begin{tabular}{lccc}
+\toprule
+模型 & AIME 2024 pass@1 & MATH-500 (\%) & Codeforces Elo \\
+\midrule
+DeepSeek-V3 Base & 39.2 & 90.2 & 1740 \\
+DeepSeek-R1-Zero & 71.0 & 95.4 & 1960 \\
+DeepSeek-R1 & \textbf{79.8} & \textbf{97.3} & \textbf{2029} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+从趋势上看，论文真正强调的是“RL 能把 reasoning 能力往上推一截”，而不是单纯展示一个更大的基础模型。R1-Zero 与 R1 之间的差距说明：纯 RL 能带来能力，但要形成稳定可读、可部署的系统仍需要额外对齐步骤。
+
+\subsection{消融 / 可解释性（如有）}
+最值得看的消融不是通用网络结构，而是：去掉冷启动数据后输出会多大程度恶化，去掉后续 RL 后性能提升还剩多少，以及蒸馏版本相对原模型的能力损失有多大。
+
+\begin{figure}[H]
+\centering
+\fbox{\rule{0pt}{45mm}\rule{0.85\linewidth}{0pt}}
+\caption{图占位：后续可替换为 R1 训练流程图、能力迁移示意图或 benchmark 对比图。}
+\end{figure}
+
+\section{Reflection}
+
+\subsection{优点}
+\begin{itemize}
+  \item 把“推理能力是否可以被 RL 直接激发”这个核心问题做得很彻底。
+  \item 不只给出大模型结果，还给出蒸馏到小模型的实际落地路径。
+  \item 方法叙事清晰，R1-Zero 和 R1 的对比很有说服力。
+\end{itemize}
+
+\subsection{局限}
+\begin{itemize}
+  \item 论文在可复现性上仍受训练资源和数据细节限制，外部团队很难完全复现。
+  \item 强化学习带来的收益主要集中在可验证任务，对开放式复杂任务能否同样稳定成立仍需观察。
+  \item 推理链的可读性、长度控制和安全性之间仍存在张力。
+\end{itemize}
+
+\subsection{对我当前研究的启发}
+如果我要做大模型研究，不应只把推理能力理解为 prompt engineering 的产物，而应把它看作可以通过训练目标和奖励设计系统塑造的能力。相比继续堆 SFT 数据，更值得关注的是如何定义可验证任务、如何构造稳定奖励，以及如何把大模型产生的推理模式蒸馏到更实用的模型上。
+
+\subsection{可迁移到大模型研究的点}
+\begin{itemize}
+  \item 纯 RL 或弱监督 RL 可以作为 reasoning model 的核心增益路径，而不是只做后处理。
+  \item 蒸馏不是附属步骤，而是把昂贵推理能力转化为工程可部署能力的关键环节。
+  \item 评测上要优先覆盖可验证任务，否则很难判断 RL 到底提升了什么。
+\end{itemize}
+
+\subsection{还没看懂的问题}
+\begin{itemize}
+  \item GRPO 相比 PPO 在大规模训练中的稳定性边界到底在哪里。
+  \item 规则奖励和偏好奖励分别占多大比重，是否存在 reward hacking 风险。
+  \item 长链推理输出的长度与最终正确率之间是否存在系统性权衡。
+\end{itemize}
+
+\section{Reuse for Proposal}
+
+\subsection{可用于开题报告 / 综述的表述草稿}
+近年来，推理大模型的能力提升逐渐从“依赖大量人工推理示范”转向“通过强化学习诱发模型自发形成推理模式”的路线。DeepSeek-R1 的结果表明，若任务具有较强可验证性，强化学习不仅可以提升最终性能，还可能改变模型内部的推理行为组织方式。
+
+\subsection{可引用的背景动机}
+对于复杂推理任务而言，单纯扩大模型规模或增加指令微调数据并不足以保证稳定的 reasoning gain。更关键的问题在于，能否通过合适的奖励信号，让模型在训练过程中主动发展出反思、验证和多步求解等行为模式。
+
+\subsection{可引用的方法描述}
+一种代表性路线是先通过少量高质量冷启动数据稳定输出格式，再利用面向可验证任务的强化学习持续提升推理性能，最后再将大模型产生的推理轨迹蒸馏给小模型，从而兼顾能力上限与部署成本。
+
+\section{References}
+
+本文主体基于 \cite{deepseekai2025r1}；作为基础能力背景，可以结合 \cite{deepseekai2024v3} 对预训练底座做理解。
+
+\printbibliography[heading=none]
+
+\end{document}

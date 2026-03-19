@@ -1,0 +1,62 @@
+\documentclass[UTF8,fontset=fandol,zihao=-4]{ctexart}
+
+\input{../templates/preamble.tex}
+\addbibresource{../bib/references.bib}
+
+\title{论文阅读总索引\\\large Reading Index}
+\author{Notes Subsystem}
+\date{最近维护日期：\today}
+
+\newcommand{\paperfilelink}[1]{\href{run:#1}{\nolinkurl{#1}}}
+\newcommand{\paperentry}[6]{%
+  \noindent
+  \begin{tabularx}{\textwidth}{@{}lY@{}}
+  \NoteField{标题}{#1}
+  \NoteField{作者}{#2}
+  \NoteField{阅读时间}{#3}
+  \NoteField{一句话摘要}{#4}
+  \NoteField{标签}{#5}
+  \NoteField{笔记文件}{\paperfilelink{#6}}
+  \end{tabularx}
+  \vspace{0.4em}
+  \hrule
+  \vspace{0.9em}
+}
+
+\begin{document}
+
+\maketitle
+
+\section{使用方式}
+
+这个索引文件用于快速浏览和维护“已读论文”的核心信息，不依赖自动扫描。后续新增论文时，直接复制一条 \verb|\paperentry{...}{...}{...}{...}{...}{...}| 并手工填写即可。
+
+\begin{enumerate}
+  \item 在 \verb|papers/| 中创建或复制笔记文件。
+  \item 在 \verb|reading_index.tex| 中追加一条 \verb|\paperentry| 记录。
+  \item 如果希望标题带引文，直接在第一个参数里手工写入 \verb|标题~\cite{bibkey}|。
+\end{enumerate}
+
+\section{已收录条目}
+
+\paperentry
+  {DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models~\cite{deepseekai2024math}}
+  {DeepSeek-AI}
+  {2026-03-22}
+  {通过大规模数学语料继续预训练、专门化数据筛选和 GRPO 强化学习，DeepSeekMath 显著提升了开源 7B 模型的数学推理能力。}
+  {math reasoning; continued pretraining; GRPO; open LLM; DeepSeek}
+  {../papers/sample_deepseekmath_note.tex}
+
+\paperentry
+  {DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning~\cite{deepseekai2025r1}}
+  {DeepSeek-AI}
+  {2026-03-19}
+  {通过大规模强化学习激发推理行为，并结合冷启动数据与多阶段训练，使开放模型在数学、代码和通用推理任务上逼近顶级闭源系统。}
+  {reasoning LLM; reinforcement learning; GRPO; distillation; DeepSeek}
+  {../papers/sample_note.tex}
+
+\section{References}
+
+\printbibliography[heading=none]
+
+\end{document}

@@ -1,0 +1,149 @@
+\documentclass[UTF8,fontset=fandol,zihao=-4]{ctexart}
+
+\input{../templates/preamble.tex}
+\addbibresource{../bib/references.bib}
+
+% ===== Edit metadata first when creating a new note =====
+\newcommand{\papertitle}{在此填写论文标题}
+\newcommand{\paperauthors}{作者 1, 作者 2, 作者 3}
+\newcommand{\papervenue}{会议 / 期刊名称}
+\newcommand{\paperyear}{2026}
+\newcommand{\paperdoi}{10.xxxx/xxxxxx}
+\newcommand{\paperurl}{https://example.org/paper}
+\newcommand{\readingdate}{\today}
+\newcommand{\paperonesentence}{用一句话概括本文的问题、方法和结论。}
+\newcommand{\paperkeywords}{关键词 1; 关键词 2; 关键词 3}
+
+\hypersetup{
+  pdftitle={\papertitle},
+  pdfauthor={\paperauthors}
+}
+
+\title{\papertitle\\\large 论文阅读笔记}
+\author{\paperauthors}
+\date{阅读日期：\readingdate}
+
+\begin{document}
+
+\maketitle
+
+\section{基本信息}
+
+\begin{tabularx}{\textwidth}{@{}lY@{}}
+\NoteField{标题}{\papertitle}
+\NoteField{作者}{\paperauthors}
+\NoteField{Venue}{\papervenue}
+\NoteField{年份}{\paperyear}
+\NoteField{DOI}{\paperdoi}
+\NoteField{URL}{\url{\paperurl}}
+\NoteField{阅读日期}{\readingdate}
+\NoteField{关键词}{\paperkeywords}
+\end{tabularx}
+
+\section{快速浏览}
+
+\subsection{一句话摘要}
+\paperonesentence
+
+\subsection{研究问题}
+说明作者试图回答的核心研究问题，最好同时写清楚问题设定与约束条件。
+
+\subsection{核心贡献}
+\begin{itemize}
+  \item 贡献 1：写清楚“提出了什么”。
+  \item 贡献 2：写清楚“相比已有方法改进了什么”。
+  \item 贡献 3：写清楚“为什么值得关心”。
+\end{itemize}
+
+\subsection{适用任务}
+\begin{itemize}
+  \item 任务类型
+  \item 数据条件
+  \item 是否支持迁移 / 少样本 / 跨被试等
+\end{itemize}
+
+\section{Method}
+
+\subsection{总体框架}
+建议从模型流程图或算法主线出发，先写输入到输出的主干。
+
+\subsection{输入输出}
+说明输入模态、时间窗、通道设定、输出任务形式。
+
+\subsection{关键模块}
+\begin{itemize}
+  \item 模块 1：作用与输入输出
+  \item 模块 2：和 baseline 的区别
+  \item 模块 3：是否引入额外先验
+\end{itemize}
+
+\subsection{训练目标 / 损失函数}
+如果论文有显式训练目标，建议直接抄录并解释每一项：
+\begin{equation}
+\mathcal{L} = \lambda_1 \mathcal{L}_1 + \lambda_2 \mathcal{L}_2.
+\end{equation}
+
+\subsection{关键公式}
+保留你后续最可能复用的公式、符号定义或复杂推导入口。
+
+\subsection{与已有方法的差异}
+这里建议用“已有方法假设 / 本文改动 / 带来的影响”的格式写。
+
+\section{Experiment}
+
+\subsection{数据集}
+记录数据来源、规模、预处理、切分方式和潜在偏差。
+
+\subsection{Baseline}
+列出比较对象，并说明这些 baseline 为什么合理。
+
+\subsection{指标}
+记录准确率、F1、AUC、kappa、MAE 等评价指标及其适用前提。
+
+\subsection{主要结果}
+优先写与本文核心 claim 直接相关的结果，不要只抄整张表。
+
+\subsection{消融 / 可解释性（如有）}
+记录最能说明方法成立性的证据。
+
+\section{Reflection}
+
+\subsection{优点}
+\begin{itemize}
+  \item 方法或实验上的可信优点
+  \item 论文表达上的优点
+\end{itemize}
+
+\subsection{局限}
+\begin{itemize}
+  \item 数据、设定、可扩展性或泛化方面的限制
+  \item 你对实验公平性的疑问
+\end{itemize}
+
+\subsection{对我当前研究的启发}
+建议直接写成能够迁移到你当前课题的判断，不要只写“有帮助”。
+
+\subsection{可迁移到 EEG foundation model 的点}
+从预训练目标、跨数据集建模、被试泛化、标签效率等角度写。
+
+\subsection{还没看懂的问题}
+把真正卡住你的地方列出来，便于二次精读。
+
+\section{Reuse for Proposal}
+
+\subsection{可用于开题报告 / 综述的表述草稿}
+尽量使用接近正式文风的完整句子，后续可直接改写迁移。
+
+\subsection{可引用的背景动机}
+记录能支撑“为什么要做这件事”的表述。
+
+\subsection{可引用的方法描述}
+记录能支撑“别人怎么做、与你有什么关系”的表述。
+
+\section{References}
+
+正文中请使用 \verb|\cite{...}| 引用，例如：相关工作可参考 \cite{deepseekai2025r1}。
+
+\printbibliography[heading=none]
+
+\end{document}
