@@ -6,7 +6,7 @@
 
 Use `nudtpaper.cls` directly and modify **your** `thesis.tex`. The contents in `makefile` may help you with the compiling procedure. Any third party packages or macros can be added in `mynudt.sty`.
 
-**About Fonts:** FZ fonts are best for printing (your final version).
+**About Fonts:** The repository already includes a `fonts/` directory with the required font files. FZ fonts are still best for printing (your final version).
 
 ## 2. Contribute to NUDTpaper
 
@@ -37,14 +37,17 @@ If `nudtpaper` helps you, please give it a **star**!
 +  **spline**    输出书脊，用于查重版本。查重论文需要在封面背面有一个带框书脊。使用该选项后会插入a3cover目录下的spineinthesis.pdf，该pdf在a3cover下利用对应的spineinthesis.tex文件生成(需输入论文标题信息)。生成方法为：编辑a3cover文件夹中的spineinthesis.tex文件，运行makeothers.bat，得到的spineinthesis.pdf即为a4大小的书脊页。
 
 
-### 3) 字体选项(注意：若提示默认使用的字体不存在则尝试切换选项或根据所缺字体下载安装)
+### 3) 字体选项
+
++  当前仓库已包含 `fonts/` 目录，常用英文字体、Adobe 字体、方正字体和常见中文字体文件已经放在仓库中，通常不需要再单独下载或安装字体。
++  若在 Overleaf 或新环境中编译，请确保 `fonts/` 目录随仓库一并上传。
 
 +  **ttf**       使用windows的字体
 +  **otf**       使用Adobe字体
-+  **fz**        使用方正字体(需要自己安装字体，下载见[地址](https://github.com/liubenyuan/nudtpaper/issues/67))
++  **fz**        使用方正字体
 +  **fandol**    使用fandol字体
 
-+  若使用上述选项且安装字体后仍提升缺字体，则可自行设置字体，方法是在导言区加入如下代码，其中的字体名为系统内存在的字体(可用fc-list命令查看)。
++  若你自行替换字体或新增字体，也可以在 `nudtpaper.cls` 中继续调整字体加载配置。当前模板已经支持从项目内的 `fonts/` 目录直接加载字体文件。
 ```
    %英文字体
     \setmainfont{Times New Roman} %times.ttf
